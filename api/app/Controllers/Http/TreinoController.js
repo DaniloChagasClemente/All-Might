@@ -1,93 +1,44 @@
-'use strict'
+"use strict";
 
-/** @typedef {import('@adonisjs/framework/src/Request')} Request */
-/** @typedef {import('@adonisjs/framework/src/Response')} Response */
-/** @typedef {import('@adonisjs/framework/src/View')} View */
+const Treino = use("App/Models/Treino");
 
-/**
- * Resourceful controller for interacting with treinos
- */
 class TreinoController {
-  /**
-   * Show a list of all treinos.
-   * GET treinos
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async index ({ request, response, view }) {
+  async index() {
+    const treinos = await Treino.all();
+    return treinos;
   }
 
-  /**
-   * Render a form to be used for creating a new treino.
-   * GET treinos/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async create ({ request, response, view }) {
+  async store({ request, auth }) {
+    const {finalidade, exercicio, repeticoes, user_id} = request.only([ "finalidade", "exercicio", "repeticoes", "user_id"]);
+    const treinos = await Treino.create({finalidade, exercicio, repeticoes, user_id/*:auth.user.id*/});
+    return treinos;
   }
 
-  /**
-   * Create/save a new treino.
-   * POST treinos
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async store ({ request, response }) {
+  async show({ params, request, response, view }) {
+    const treinos = await Treino.find(1); //FindOrFail
+    return treinos;
   }
 
-  /**
-   * Display a single treino.
-   * GET treinos/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async show ({ params, request, response, view }) {
+  async update({ params, request, response }) {
+    const treinos = await Treino.find(1); //findOrFail
+    const { finalidade, exercicio, repeticoes, user_id } = request.only([
+      "finalidade",
+      "exercicio",
+      "repeticoes",
+      "user_id"]);
+    treinos.finalidade = finalidade;
+    treinos.exercicio = exercicio;
+    treinos.repeticoes = repeticoes;
+    treinos.user_id = user_id;
+    await treinos.save();
+    return treinos;
   }
 
-  /**
-   * Render a form to update an existing treino.
-   * GET treinos/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async edit ({ params, request, response, view }) {
-  }
-
-  /**
-   * Update treino details.
-   * PUT or PATCH treinos/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async update ({ params, request, response }) {
-  }
-
-  /**
-   * Delete a treino with id.
-   * DELETE treinos/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async destroy ({ params, request, response }) {
+  async destroy({ params, request, response }) {
+    const treinos = await Treino.find(1); //FindOrFail
+    await treinos.delete();
+    return treinos;
   }
 }
 
-module.exports = TreinoController
+module.exports = TreinoController;
